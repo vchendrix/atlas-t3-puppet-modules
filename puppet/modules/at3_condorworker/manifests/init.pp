@@ -1,4 +1,4 @@
-define at3_condorworker($condorheadaddr,$HDFSFuseMount,$condorpassword) {
+define at3_condorworker($condorheadaddr,$hdfsFuseMount,$condorpassword) {
 #    $condorheadaddr=get_provider_attr($webaddr,$roleid,"CondorHeadAddr")
 #    $HDFSFuseMount=get_provider_attr($webaddr,$roleid,"HDFSFuseMount")
 #    $condorpassword=get_role_attr($webaddr,$roleid,"condorpassword")    

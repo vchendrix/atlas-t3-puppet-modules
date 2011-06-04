@@ -1,15 +1,4 @@
 class condor_base {
-}
-
-
-define at3_condorhead($hdfsFuseMount, $condorpassword,$condor_allow_negotiator_extra, $filesystemdomain) {
-
-  #$hdfsFuseMount=get_provider_attr($webaddr,$roleid,"hdfsFuseMount")
-  #  $filesystemdomain=get_role_attr($webaddr,$roleid,"FILESYSTEM_DOMAIN")
-  #  $condorpassword=get_role_attr($webaddr,$roleid,"condorpassword")
-  #  $condor_allow_negotiator_extra=""
-
-  
     exec { get_condor_repo:
      command => "wget -O /etc/yum.repos.d/condor-stable-rhel5.repo http://www.cs.wisc.edu/condor/yum/repo.d/condor-stable-rhel5.repo",
      creates => '/etc/yum.repos.d/condor-stable-rhel5.repo',
@@ -21,7 +10,20 @@ define at3_condorhead($hdfsFuseMount, $condorpassword,$condor_allow_negotiator_e
       ensure => installed,
       require => Exec['get_condor_repo'],
     }
+}
 
+
+define at3_condorhead($hdfsFuseMount, $condorpassword,$condor_allow_negotiator_extra, $filesystemdomain) {
+
+  #$hdfsFuseMount=get_provider_attr($webaddr,$roleid,"hdfsFuseMount")
+  #  $filesystemdomain=get_role_attr($webaddr,$roleid,"FILESYSTEM_DOMAIN")
+  #  $condorpassword=get_role_attr($webaddr,$roleid,"condorpassword")
+  #  $condor_allow_negotiator_extra=""
+  include condor_base 
+  class { 'condorhead':}
+  
+  class condorhead {
+  
     file { "$hdfsFuseMount/condor":
       owner => "root",
       group => "root",
@@ -69,6 +71,9 @@ define at3_condorhead($hdfsFuseMount, $condorpassword,$condor_allow_negotiator_e
       require => [Exec["create_condorpassword"]],
     }
 
+  }
+  
+  Class['condor_base'] -> Class['condorhead']
 }
 
 #    set_role_attr($webaddr,$roleid,"CondorHeadAddr","$fqdn")    

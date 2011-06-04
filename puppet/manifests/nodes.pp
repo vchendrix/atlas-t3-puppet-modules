@@ -13,19 +13,19 @@ $condor_allow_negotiator_extra = ''
 node condorhead {
 
   hadoop::hadoop_fuse { myfuseclient:
-    mountPoint	=> $mountPoint,
+    mountPoint		=> $mountPoint,
     fsDefaultName 	=> $fsDefaultName, 
   }
-  at3_condorhead { mycondor:
-    hdfsFuseMount => "$mountPoint/user/root",
-    filesystemdomain => 'dyndns.org',
-    condorpassword => 'abcdefg',
+  at3_condorhead { condorhead:
+    hdfsFuseMount 	=> "$mountPoint/user/root",
+    filesystemdomain 	=> 'dyndns.org',
+    condorpassword 	=> $condorpassword,
     condor_allow_negotiator_extra => '',
   }
 }
 
 node namenode {
-  hadoop::hadoop_namenode{ mynamenode:
+  hadoop::hadoop_namenode{ namenode:
     clusterName 	=> $clusterName, 
     dataNodes 		=> $dataNodes, 
     fsDefaultName 	=> $fsDefaultName, 
@@ -35,20 +35,20 @@ node namenode {
 
 node worker01 { 
  
-  hadoop::hadoop_datanode{ mydatanode:
+  hadoop::hadoop_datanode{ worker01_datanode:
     clusterName 	=> $clusterName, 
     dataNodes 		=> $dataNodes, 
     fsDefaultName 	=> $fsDefaultName, 
     nameNodes 		=> $nameNodess, 
 
   }
-  hadoop::hadoop_fuse { myfuseclient:
-    mountPoint	=> $mountPoint,
+  hadoop::hadoop_fuse { worker01_fuseclient:
+    mountPoint		=> $mountPoint,
     fsDefaultName 	=> $fsDefaultName, 
   }
-  #at3_condorworker{ mycondorworker:
-  #  hdfsFuseMount		   => '/mnt/hdfs',
-  #  condorheadaddr		   => 'condorhead',
-  #  condorpassword		   => 'abcdefg',  	
-  #}
+  at3_condorworker{ worker01_condorworker:
+    hdfsFuseMount  => "$mountPoint/user/root",
+    condorheadaddr => 'condorhead',
+    condorpassword => $condorpassword,  	
+  }
 }
