@@ -24,6 +24,8 @@
 class hadoop::cls_hadoop_cluster_config($clusterName,$dataNodes,$fsDefaultName,$nameNodes) {
   include hadoop::cls_hadoop_core
 
+  Class['hadoop::cls_hadoop_core'] -> Class['hadoop::cls_hadoop_cluster_config']
+
   #################################################
   # This is the hadoop configuration for all of the 
   # hadoop services. 

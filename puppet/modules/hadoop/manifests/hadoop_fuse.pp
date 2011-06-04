@@ -11,12 +11,14 @@
 #     fuse  service
 #
 # Requires:
-#   - hadooop_datanode definition
+#   - A hadoop cluster should be up and running
 #
 # Sample Usage:
 #
 #
 define hadoop::hadoop_fuse($fsDefaultName,$mountPoint="/mnt/hdfs") {
+  include hadoop::cls_hadoop_core
+
   package { ['hadoop-0.20-libhdfs.x86_64','hadoop-0.20-native.x86_64']:
     ensure	=> installed,
     require	=> Package['hadoop-0.20.noarch'],
@@ -33,13 +35,6 @@ define hadoop::hadoop_fuse($fsDefaultName,$mountPoint="/mnt/hdfs") {
   }
 
   # hadoop-fuse-dfs#dfs://namenode:54310    /mnt/hdfs       fuse    allow_other,usetrash,rw 2       0
-  $mountCount = "`mount | grep '/mnt/hdfs' | wc -l`"
-  case $mountCount {
-    '0':{ $mounted=false}
-    'default':{$mounted=true}
-  }
-  
-  if $mounted {
   mount { [$mountPoint]:
     atboot	=> true,
     device	=> "hadoop-fuse-dfs#dfs://${fsDefaultName}",
@@ -48,9 +43,8 @@ define hadoop::hadoop_fuse($fsDefaultName,$mountPoint="/mnt/hdfs") {
     pass	=> 0,
     dump	=> 0,
     options	=> 'allow_other,usetrash,rw',
+    remounts    => true,
     require	=> File[$mountPoint],
   }
-  }
-
 }
 

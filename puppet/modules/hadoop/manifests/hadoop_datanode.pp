@@ -28,36 +28,42 @@ define hadoop::hadoop_datanode($clusterName="atlas",$dataNodes=['datanode'],$fsD
     fsDefaultName		=> $fsDefaultName,
     nameNodes			=> $nameNodes,
   }
+  class { 'hadoop_datanode':}
  
-  package { ["hadoop-0.20-datanode.noarch"]:
-    ensure => installed,
-    require => [Package["hadoop-0.20.noarch"],Class['hadoop::cls_hadoop_cluster_config']],
-  }   
+  class hadoop_datanode {
 
-  file { ["/data","/data/dfs","/data/dfs/dn"]:
-    ensure    => directory,
-    owner     => "hdfs",
-    group     => "hadoop",
-    mode      => 0700,
-    recurse   => true,
-    require   => Package["hadoop-0.20-datanode.noarch"],
-  }   
- 
-  file { ["/mapred/","/mapred/local","/mapred/system"]:
-    ensure    => directory,
-    owner     => "mapred",
-    group     => "hadoop",
-    mode      => 0755,
-    recurse   => true,
-    require   => Package["hadoop-0.20-datanode.noarch"],
-  }   
+	  package { ["hadoop-0.20-datanode.noarch"]:
+	    ensure => installed,
+	    require => [Package["hadoop-0.20.noarch"],Class['hadoop::cls_hadoop_cluster_config']],
+	  }   
 
-  service { 'hadoop-0.20-datanode':
-    ensure    => running,
-    enable    => true,
-    hasstatus => true,
-    hasrestart=> true,
-    require   => File["/data/dfs/dn"],
-  }   
+	  file { ["/data","/data/dfs","/data/dfs/dn"]:
+	    ensure    => directory,
+	    owner     => "hdfs",
+	    group     => "hadoop",
+	    mode      => 0700,
+	    recurse   => true,
+	    require   => Package["hadoop-0.20-datanode.noarch"],
+	  }   
+	 
+	  file { ["/mapred/","/mapred/local","/mapred/system"]:
+	    ensure    => directory,
+	    owner     => "mapred",
+	    group     => "hadoop",
+	    mode      => 0755,
+	    recurse   => true,
+	    require   => Package["hadoop-0.20-datanode.noarch"],
+	  }   
+
+	  service { 'hadoop-0.20-datanode':
+	    ensure    => running,
+	    enable    => true,
+	    hasstatus => true,
+	    hasrestart=> true,
+	    require   => File["/data/dfs/dn"],
+	  }   
+  }
+
+  Class['hadoop::cls_hadoop_cluster_config'] -> Class['hadoop_datanode']
 }
 

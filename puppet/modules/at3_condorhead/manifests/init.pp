@@ -1,15 +1,4 @@
 class condor_base {
-  exec { get_condor_repo:
-     command => "wget -O /etc/yum.repos.d/condor-stable-rhel5.repo http://www.cs.wisc.edu/condor/yum/repo.d/condor-stable-rhel5.repo",
-     creates => '/etc/yum.repos.d/condor-stable-rhel5.repo',
-     path => ["/bin","/usr/bin", "/usr/sbin"],
-     logoutput => true,
-  }
-
-  package { "condor":
-    ensure => installed,
-    require => Exec['get_condor_repo'],
-  }
 }
 
 
@@ -19,12 +8,26 @@ define at3_condorhead($hdfsFuseMount, $condorpassword,$condor_allow_negotiator_e
   #  $filesystemdomain=get_role_attr($webaddr,$roleid,"FILESYSTEM_DOMAIN")
   #  $condorpassword=get_role_attr($webaddr,$roleid,"condorpassword")
   #  $condor_allow_negotiator_extra=""
+
   
+    exec { get_condor_repo:
+     command => "wget -O /etc/yum.repos.d/condor-stable-rhel5.repo http://www.cs.wisc.edu/condor/yum/repo.d/condor-stable-rhel5.repo",
+     creates => '/etc/yum.repos.d/condor-stable-rhel5.repo',
+     path => ["/bin","/usr/bin", "/usr/sbin"],
+     logoutput => true,
+  }
+
+    package { "condor":
+      ensure => installed,
+      require => Exec['get_condor_repo'],
+    }
+
     file { "$hdfsFuseMount/condor":
       owner => "root",
       group => "root",
       ensure => directory,
       mode => 755,
+      require => Package['condor'],
     }
     
     file { "$hdfsFuseMount/condor/condor_config":
@@ -49,6 +52,7 @@ define at3_condorhead($hdfsFuseMount, $condorpassword,$condor_allow_negotiator_e
       group => "root",
       mode => 644,
       content => template("at3_condorhead/condor_config.local.tpl"),
+      require => Package['condor'],
     }
     
     exec { create_condorpassword:
@@ -57,14 +61,12 @@ define at3_condorhead($hdfsFuseMount, $condorpassword,$condor_allow_negotiator_e
       creates => "/var/condor_credentiald",
     }
     
-    include condor_base
-    
     service { [ "condor"]:
       ensure => running,
       enable => true,
       hasstatus => true,
       hasrestart => true,
-      require => [Package["condor"],Exec["create_condorpassword"]],
+      require => [Exec["create_condorpassword"]],
     }
 
 }
