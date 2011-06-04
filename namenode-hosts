@@ -1,0 +1,6 @@
+# Do not remove the following line, or various programs
+# that require network functionality will fail.
+192.168.124.128	puppet
+192.168.124.130 namenode
+192.168.124.131 worker01
+
