@@ -16,12 +16,19 @@
 # Sample Usage:
 #
 #
-define hadoop::hadoop_fuse($fsDefaultName,$mountPoint="/mnt/hdfs") {
-  include hadoop::cls_hadoop_core
-
+define hadoop::hadoop_fuse($fsDefaultName,$dataNodes,$nameNodes,$mountPoint="/mnt/hdfs") {
+  
+  class { 'hadoop::cls_hadoop_cluster_config':
+    dataNodes	=> $dataNodes,
+    fsDefaultName => $fsDefaultName,
+    nameNodes	  => $nameNodes,
+    clusterName   => 'atlas'
+  }
+  
+  
   package { ['hadoop-0.20-libhdfs.x86_64','hadoop-0.20-native.x86_64']:
     ensure	=> installed,
-    require	=> Package['hadoop-0.20.noarch'],
+    require	=> Class['hadoop::cls_hadoop_cluster_config'],
   }
 
   package { ['hadoop-0.20-fuse.x86_64']:
@@ -46,5 +53,6 @@ define hadoop::hadoop_fuse($fsDefaultName,$mountPoint="/mnt/hdfs") {
     remounts    => true,
     require	=> File[$mountPoint],
   }
+  
 }
 

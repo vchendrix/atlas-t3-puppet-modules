@@ -12,9 +12,11 @@ $condor_allow_negotiator_extra = ''
 
 node condorhead {
 
-  hadoop::hadoop_fuse { myfuseclient:
+  hadoop::hadoop_fuse { fuseclient:
     mountPoint		=> $mountPoint,
     fsDefaultName 	=> $fsDefaultName, 
+    dataNodes 		=> $dataNodes, 
+    nameNodes 		=> $nameNodes, 
   }
   at3_condorhead { condorhead:
     hdfsFuseMount 	=> "$mountPoint/user/root",
@@ -45,6 +47,8 @@ node worker01 {
   hadoop::hadoop_fuse { worker01_fuseclient:
     mountPoint		=> $mountPoint,
     fsDefaultName 	=> $fsDefaultName, 
+    dataNodes 		=> $dataNodes, 
+    nameNodes 		=> $nameNodess, 
   }
   at3_condorworker{ worker01_condorworker:
     hdfsFuseMount  => "$mountPoint/user/root",
