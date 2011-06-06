@@ -14,7 +14,8 @@ class condor_base {
 
 
 define at3_condorhead($hdfsFuseMount, $condorpassword,$condor_allow_negotiator_extra, $filesystemdomain) {
-
+  
+  $rootDir = '/user/root'
   #$hdfsFuseMount=get_provider_attr($webaddr,$roleid,"hdfsFuseMount")
   #  $filesystemdomain=get_role_attr($webaddr,$roleid,"FILESYSTEM_DOMAIN")
   #  $condorpassword=get_role_attr($webaddr,$roleid,"condorpassword")
@@ -24,7 +25,23 @@ define at3_condorhead($hdfsFuseMount, $condorpassword,$condor_allow_negotiator_e
   
   class condorhead {
   
-    file { "$hdfsFuseMount/condor":
+   exec { make_hadoop_user_dir:
+     command => "hadoop fs -mkdir -p $rootDir",
+     path    => ['/bin','/usr/bin'],
+     user    => 'hdfs',
+     logoutput => true,
+     creates => "$hdfsFuseMount$rootDir",
+    }
+    
+    exec { chown_user_root:
+     command => "hadoop fs -chown -R root:root $rootDir",
+     path    => ['/bin','/usr/bin'],
+     user    => 'hdfs',
+     logoutput => true,
+     require  => Exec['make_hadoop_user_dir'],
+   }
+
+    file { "$hdfsFuseMount$rootDir/condor":
       owner => "root",
       group => "root",
       ensure => directory,
@@ -32,12 +49,13 @@ define at3_condorhead($hdfsFuseMount, $condorpassword,$condor_allow_negotiator_e
       require => Package['condor'],
     }
     
-    file { "$hdfsFuseMount/condor/condor_config":
+    file { "$hdfsFuseMount$rootDir/condor/condor_config":
+      ensure => present,
       owner => "root",
       group => "root",
       mode => 644,
       content => template("at3_condorhead/condor_config.tpl"),
-      require => File["$hdfsFuseMount/condor"],
+      require => File["$hdfsFuseMount$rootDir/condor"],
     }
 
     file { "/etc/condor/condor_config":
@@ -45,8 +63,8 @@ define at3_condorhead($hdfsFuseMount, $condorpassword,$condor_allow_negotiator_e
       group => "root",
       ensure  => symlink,
       replace => true,
-      require => File["$hdfsFuseMount/condor"],      
-      target    => "$hdfsFuseMount/condor/condor_config",
+      require => File["$hdfsFuseMount$rootDir/condor"],      
+      target    => "$hdfsFuseMount$rootDir/condor/condor_config",
     }
 
     file { "/etc/condor/condor_config.local":

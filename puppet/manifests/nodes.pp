@@ -19,7 +19,7 @@ node condorhead {
     nameNodes 		=> $nameNodes, 
   }
   at3_condorhead { condorhead:
-    hdfsFuseMount 	=> "$mountPoint/user/root",
+    hdfsFuseMount 	=> "$mountPoint",
     filesystemdomain 	=> 'dyndns.org',
     condorpassword 	=> $condorpassword,
     condor_allow_negotiator_extra => '',
