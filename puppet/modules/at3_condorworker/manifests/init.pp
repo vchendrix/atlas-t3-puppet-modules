@@ -10,7 +10,7 @@ define at3_condorworker($condorheadaddr,$hdfsFuseMount,$condorpassword) {
     group => "root",
     ensure  => symlink,
     replace => true,
-    target    => "$HDFSFuseMount/condor/condor_config",
+    target    => "$HDFSFuseMount/user/root/condor/condor_config",
     notify => Service["condor"],
   }
   

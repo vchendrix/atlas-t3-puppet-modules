@@ -18,13 +18,6 @@
 #
 define hadoop::hadoop_fuse($fsDefaultName,$dataNodes,$nameNodes,$mountPoint="/mnt/hdfs") {
   
-  class { 'hadoop::cls_hadoop_cluster_config':
-    dataNodes	=> $dataNodes,
-    fsDefaultName => $fsDefaultName,
-    nameNodes	  => $nameNodes,
-    clusterName   => 'atlas'
-  }
-  
   
   package { ['hadoop-0.20-libhdfs.x86_64','hadoop-0.20-native.x86_64']:
     ensure	=> installed,

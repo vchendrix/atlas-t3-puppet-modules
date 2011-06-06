@@ -22,12 +22,6 @@
 #
 #
 define hadoop::hadoop_datanode($clusterName="atlas",$dataNodes=['datanode'],$fsDefaultName,$nameNodes=['namenode']) {
-  class { 'hadoop::cls_hadoop_cluster_config':
-    clusterName			=> $clusterName,
-    dataNodes			=> $dataNodes,
-    fsDefaultName		=> $fsDefaultName,
-    nameNodes			=> $nameNodes,
-  }
   class { 'hadoop_datanode':}
  
   class hadoop_datanode {
