@@ -72,7 +72,7 @@ node worker01 {
     nameNodes 		=> $nameNodes, 
   }
   at3_condorworker{ worker01_condorworker:
-    hdfsFuseMount  => "$mountPoint/user/root",
+    hdfsFuseMount  => $mountPoint,
     condorheadaddr => 'condorhead',
     condorpassword => $condorpassword,  	
   }
