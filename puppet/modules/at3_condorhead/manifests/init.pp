@@ -19,7 +19,7 @@
 define at3_condorhead($condorpassword,$condor_allow_negotiator_extra,$clusterName, $filesystemdomain,
    $mountPoint,$dataNodes,$nameNodes,$fsDefaultName) {
   
-  include cls_condor_base 
+  include condor::cls_condor_base 
   class { 'condor::cls_condor_head':
     mountPoint	 	=> $mountPoint,
     filesystemdomain 	=> $filesystemdomain,
@@ -31,20 +31,20 @@ define at3_condorhead($condorpassword,$condor_allow_negotiator_extra,$clusterNam
     dataNodes 		=> $dataNodes, 
     nameNodes 		=> $nameNodes, 
   }
-  class { 'hadoop::hadoop_datanode':  
+  hadoop::hadoop_datanode { atlas_condorhead_datanode:  
     clusterName 	=> $clusterName, 
     dataNodes 		=> $dataNodes, 
     fsDefaultName 	=> $fsDefaultName, 
     nameNodes 		=> $nameNodes, 
   }
-  hadoop::cls_hadoop_cluster_config { atlas_hadoop_cluster_config:
+  hadoop::hadoop_cluster_config { atlas_hadoop_cluster_config:
     dataNodes	  => $dataNodes,
     fsDefaultName => $fsDefaultName,
     nameNodes	  => $nameNodes,
     clusterName   => $clusterName,
   }
   hadoop::hdfs_fuse_mount{ condor_hdfs_fuse_mount:
-    filesystem	=> $fsDefaultName,
+    fileSystem	=> $fsDefaultName,
     path	=> '/',
     mountPoint => $mountPoint,
   }

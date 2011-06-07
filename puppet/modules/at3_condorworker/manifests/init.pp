@@ -24,30 +24,28 @@ define at3_condorworker($clusterName,$condorheadaddr,$condorpassword,$filesystem
     condorpassword 	=> $condorpassword,
     condorheadaddr	=> $condorheadaddr,
     mountPoint	 	=> $mountPoint,
-    filesystemdomain 	=> $filesystemdomain,
   }
   class { 'hadoop::cls_hadoop_fuse': 
     fsDefaultName 	=> $fsDefaultName, 
     dataNodes 		=> $dataNodes, 
     nameNodes 		=> $nameNodes, 
   }
-  hadoop::cls_hadoop_cluster_config { atlas_hadoop_cluster_config:
+  hadoop::hadoop_cluster_config { atlas_worker01_hadoop_cluster_config:
     dataNodes	  => $dataNodes,
     fsDefaultName => $fsDefaultName,
     nameNodes	  => $nameNodes,
     clusterName   => $clusterName, 
   }
-  hadoop::hdfs_fuse_mount{ condor_hdfs_fuse_mount:
-    filesystem	=> $fsDefaultName,
+  hadoop::hdfs_fuse_mount{ condor_worker01_hdfs_fuse_mount:
+    fileSystem	=> $fsDefaultName,
     path	=> '/',
     mountPoint => $mountPoint,
   }
-  class { 'hadoop::hadoop_datanode': 
+  hadoop::hadoop_datanode{ atlas_worker01_datanode:
     clusterName 	=> $clusterName, 
     dataNodes 		=> $dataNodes, 
     fsDefaultName 	=> $fsDefaultName, 
     nameNodes 		=> $nameNodess, 
-  }
-  
+ } 
 }
 
