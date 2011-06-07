@@ -15,20 +15,17 @@
 #     datanode  service
 #
 # Requires
-#  - Class['hadoop::cls_hadoop-core']
-#  - Class['hadoop::cls_hadoop-cluster-config']
+#  - Class['hadoop::cls_hadoop_core']
 #
 # Sample Usage:
 #
 #
 define hadoop::hadoop_datanode($clusterName="atlas",$dataNodes=['datanode'],$fsDefaultName,$nameNodes=['namenode']) {
-  class { 'hadoop_datanode':}
  
-  class hadoop_datanode {
 
 	  package { ["hadoop-0.20-datanode.noarch"]:
 	    ensure => installed,
-	    require => [Package["hadoop-0.20.noarch"],Class['hadoop::cls_hadoop_cluster_config']],
+	    require => Class['hadoop::cls_hadoop_core'],
 	  }   
 
 	  file { ["/data","/data/dfs","/data/dfs/dn"]:
@@ -56,8 +53,6 @@ define hadoop::hadoop_datanode($clusterName="atlas",$dataNodes=['datanode'],$fsD
 	    hasrestart=> true,
 	    require   => File["/data/dfs/dn"],
 	  }   
-  }
 
-  Class['hadoop::cls_hadoop_cluster_config'] -> Class['hadoop_datanode']
 }
 

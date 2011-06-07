@@ -14,19 +14,17 @@
 #     namenode service
 #
 # Requires
-#  - Class['hadoop::cls_hadoop-cluster-config']
+#  - Class['hadoop::hadoop::cls_hadoop_core']
 #
 # Sample Usage:
 #
 #
 define hadoop::hadoop_namenode($clusterName="atlas",$dataNodes=['datanode'],$fsDefaultName,$nameNodes=['namenode']) {
-  class { 'hadoop_namenode':}
  
-  class hadoop_namenode {
 
 	  package { ["hadoop-0.20-namenode.noarch"]:
 	    ensure => installed,
-	    require => [Package["hadoop-0.20.noarch"],Class['hadoop::cls_hadoop_cluster_config']],
+	    require => Class['hadoop::cls_hadoop_core'],
 	  }
 
 	  file { ["/data","/data/dfs","/data/dfs/nn","/data/dfs/dn"]:
@@ -65,7 +63,5 @@ define hadoop::hadoop_namenode($clusterName="atlas",$dataNodes=['datanode'],$fsD
 	    hasstatus => true,
 	    hasrestart=> true,
 	  }
-  }
   
-  Class['hadoop::cls_hadoop_cluster_config'] -> Class['hadoop_namenode']
 }

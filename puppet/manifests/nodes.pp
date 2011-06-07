@@ -4,41 +4,51 @@ $fsDefaultName 	= 'namenode:54310'
 $nameNodes 	= ['namenode']
 $mountPoint	= "/mnt/hdfs"
 
-$hdfsFuseMount	= $mountPoint
 $filesystemdomain = 'dyndns.org'
 $condorpassword	= 'abcdefg'
+$condorheadaddr = 'condorhead'
 $condor_allow_negotiator_extra = ''
 
 
 node condorhead {
-  class { 'hadoop::cls_hadoop_cluster_config':
-    dataNodes	  => $dataNodes,
-    fsDefaultName => $fsDefaultName,
-    nameNodes	  => $nameNodes,
-    clusterName   => 'atlas'
+  include condor::cls_condor_base 
+  class { 'condor::cls_condor_head':
+    mountPoint	 	=> $mountPoint,
+    filesystemdomain 	=> $filesystemdomain,
+    condorpassword 	=> $condorpassword,
+    condor_allow_negotiator_extra => $condor_allow_negotiator_extra,
   }
-
-  hadoop::hadoop_fuse { fuseclient:
-    mountPoint		=> $mountPoint,
+  class { 'hadoop::cls_hadoop_fuse': 
     fsDefaultName 	=> $fsDefaultName, 
     dataNodes 		=> $dataNodes, 
     nameNodes 		=> $nameNodes, 
   }
-  at3_condorhead { condorhead:
-    hdfsFuseMount 	=> "$mountPoint",
-    filesystemdomain 	=> 'dyndns.org',
-    condorpassword 	=> $condorpassword,
-    condor_allow_negotiator_extra => '',
+  hadoop::hadoop_datanode { atlas_condorhead_datanode:  
+    clusterName 	=> $clusterName, 
+    dataNodes 		=> $dataNodes, 
+    fsDefaultName 	=> $fsDefaultName, 
+    nameNodes 		=> $nameNodes, 
+  }
+  hadoop::hadoop_cluster_config { atlas_hadoop_cluster_config:
+    dataNodes	  => $dataNodes,
+    fsDefaultName => $fsDefaultName,
+    nameNodes	  => $nameNodes,
+    clusterName   => $clusterName,
+  }
+  hadoop::hdfs_fuse_mount{ condor_hdfs_fuse_mount:
+    fileSystem	=> $fsDefaultName,
+    path	=> '/',
+    mountPoint => $mountPoint,
   }
 }
 
 node namenode {
-  
-  class { 'hadoop::cls_hadoop_cluster_config':
+
+  hadoop::hadoop_cluster_config { atlas_tier3_hadoop_config:
     dataNodes	  => $dataNodes,
     fsDefaultName => $fsDefaultName,
     nameNodes	  => $nameNodes,
-    clusterName   => 'atlas'
+    clusterName   => $clusterName, 
   }
 
   hadoop::hadoop_namenode{ namenode:
@@ -51,29 +61,32 @@ node namenode {
 
 node worker01 { 
  
-  class { 'hadoop::cls_hadoop_cluster_config':
-    dataNodes	  => $dataNodes,
-    fsDefaultName => $fsDefaultName,
-    nameNodes	  => $nameNodes,
-    clusterName   => 'atlas'
+  include condor::cls_condor_base 
+  class { 'condor::cls_condor_worker':
+    condorpassword 	=> $condorpassword,
+    condorheadaddr	=> $condorheadaddr,
+    mountPoint	 	=> $mountPoint,
   }
-  
-  hadoop::hadoop_datanode{ worker01_datanode:
-    clusterName 	=> $clusterName, 
-    dataNodes 		=> $dataNodes, 
-    fsDefaultName 	=> $fsDefaultName, 
-    nameNodes 		=> $nameNodess, 
-
-  }
-  hadoop::hadoop_fuse { worker01_fuseclient:
-    mountPoint		=> $mountPoint,
+  class { 'hadoop::cls_hadoop_fuse': 
     fsDefaultName 	=> $fsDefaultName, 
     dataNodes 		=> $dataNodes, 
     nameNodes 		=> $nameNodes, 
   }
-  at3_condorworker{ worker01_condorworker:
-    hdfsFuseMount  => $mountPoint,
-    condorheadaddr => 'condorhead',
-    condorpassword => $condorpassword,  	
+  hadoop::hadoop_cluster_config { atlas_hadoop_cluster_config:
+    dataNodes	  => $dataNodes,
+    fsDefaultName => $fsDefaultName,
+    nameNodes	  => $nameNodes,
+    clusterName   => $clusterName, 
+  }
+  hadoop::hdfs_fuse_mount{ condor_worker_hdfs_fuse_mount:
+    fileSystem	=> $fsDefaultName,
+    path	=> '/',
+    mountPoint => $mountPoint,
+  }
+  class { 'hadoop::hadoop_datanode': 
+    clusterName 	=> $clusterName, 
+    dataNodes 		=> $dataNodes, 
+    fsDefaultName 	=> $fsDefaultName, 
+    nameNodes 		=> $nameNodess, 
   }
 }
