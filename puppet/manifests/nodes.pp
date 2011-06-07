@@ -83,7 +83,7 @@ node worker01 {
     path	=> '/',
     mountPoint => $mountPoint,
   }
-  class { 'hadoop::hadoop_datanode': 
+  hadoop::hadoop_datanode( atlas_worker01_datanode:
     clusterName 	=> $clusterName, 
     dataNodes 		=> $dataNodes, 
     fsDefaultName 	=> $fsDefaultName, 
