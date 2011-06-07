@@ -4,7 +4,7 @@ $fsDefaultName 	= 'namenode:54310'
 $nameNodes 	= ['namenode']
 $mountPoint	= "/mnt/hdfs"
 
-$filesystemdomain = 'dyndns.org'
+$filesystemdomain = 'atlasmagellan.dyndns.org'
 $condorpassword	= 'abcdefg'
 $condorheadaddr = 'condorhead'
 $condor_allow_negotiator_extra = ''
@@ -72,13 +72,13 @@ node worker01 {
     dataNodes 		=> $dataNodes, 
     nameNodes 		=> $nameNodes, 
   }
-  hadoop::hadoop_cluster_config { atlas_hadoop_cluster_config:
+  hadoop::hadoop_cluster_config { atlas_worker01_hadoop_cluster_config:
     dataNodes	  => $dataNodes,
     fsDefaultName => $fsDefaultName,
     nameNodes	  => $nameNodes,
     clusterName   => $clusterName, 
   }
-  hadoop::hdfs_fuse_mount{ condor_worker_hdfs_fuse_mount:
+  hadoop::hdfs_fuse_mount{ condor_worker01_hdfs_fuse_mount:
     fileSystem	=> $fsDefaultName,
     path	=> '/',
     mountPoint => $mountPoint,
