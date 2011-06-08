@@ -17,14 +17,19 @@
 #
 #
 define at3_condorworker($clusterName,$condorheadaddr,$condorpassword,$filesystemdomain,
-   $mountPoint,$dataNodes,$nameNodes,$fsDefaultName) {
+   $mountPoint,$dataNodes,$nameNodes,$fsDefaultName,$nfsShare,$nfsMount) {
   
   include condor::cls_condor_base 
   class { 'condor::cls_condor_worker':
     condorpassword 	=> $condorpassword,
     condorheadaddr	=> $condorheadaddr,
-    mountPoint	 	=> $mountPoint,
+    mountPoint	 	=> $nfsMount,
   }
+  nfs::at3_nfsclient { atlas_nfs_client:
+    source => $nfsShare,
+    dest   => $nfsMount,
+  }
+  Service['nfs'] -> Class['condor::cls_condor_worker']
   class { 'hadoop::cls_hadoop_fuse': 
     fsDefaultName 	=> $fsDefaultName, 
     dataNodes 		=> $dataNodes, 

@@ -17,15 +17,22 @@
 #
 #
 define at3_condorhead($condorpassword,$condor_allow_negotiator_extra,$clusterName, $filesystemdomain,
-   $mountPoint,$dataNodes,$nameNodes,$fsDefaultName) {
+   $mountPoint,$dataNodes,$nameNodes,$fsDefaultName,$nfsShare,$nfsMount) {
   
   include condor::cls_condor_base 
+
   class { 'condor::cls_condor_head':
-    mountPoint	 	=> $mountPoint,
+    mountPoint	 	=> $nfsMount,
     filesystemdomain 	=> $filesystemdomain,
     condorpassword 	=> $condorpassword,
     condor_allow_negotiator_extra => $condor_allow_negotiator_extra,
   }
+  nfs::at3_nfssrv { atlas_nfs:
+    share_root	=> $nfsShareRoot,
+    clientlist	=> $nfsClientList,
+  }
+  Service['nfs'] -> Class['condor::cls_condor_head']
+
   class { 'hadoop::cls_hadoop_fuse': 
     fsDefaultName 	=> $fsDefaultName, 
     dataNodes 		=> $dataNodes, 
@@ -49,5 +56,23 @@ define at3_condorhead($condorpassword,$condor_allow_negotiator_extra,$clusterNam
     mountPoint => $mountPoint,
   }
   
+  $rootDir = "/user/root"
+  exec { make_hadoop_user_dir:
+     command => "hadoop fs -mkdir -p $rootDir",
+     path    => ['/bin','/usr/bin'],
+     user    => 'hdfs',
+     logoutput => true,
+     creates => "${mountPoint}",
+     require => Mount[$mountPoint],
+  }
+    
+  exec { chown_user_root:
+     command => "hadoop fs -chown -R root:root $rootDir",
+     path    => ['/bin','/usr/bin'],
+     user    => 'hdfs',
+     logoutput => true,
+     require  => Exec['make_hadoop_user_dir'],
+  }
+
 }
 

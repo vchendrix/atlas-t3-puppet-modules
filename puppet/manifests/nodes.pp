@@ -1,10 +1,14 @@
+$nfsShareRoot = "/export/share"
+$nfsClientList = ["192.168.124.0/255.255.240.0"]
+
 $clusterName 	= 'altas'
 $dataNodes 	= ['worker01']
 $fsDefaultName 	= 'namenode:54310'
 $nameNodes 	= ['namenode']
 $mountPoint	= "/mnt/hdfs"
 
-$filesystemdomain = 'atlasmagellan.dyndns.org'
+#$filesystemdomain = 'atlasmagellan.dyndns.org'
+$filesystemdomain = 'condorfiles'
 $condorpassword	= 'abcdefg'
 $condorheadaddr = 'condorhead'
 $condor_allow_negotiator_extra = ''
@@ -21,7 +25,14 @@ node condorhead {
     filesystemdomain 	=> $filesystemdomain,
     mountPoint	 	=> $mountPoint,
     nameNodes 		=> $nameNodes, 
+    nfsShare		=> "condorhead:$nfsShareRoot",
+    nfsMount		=> $nfsShareRoot,
   }
+}
+
+node panda-pilot-submitter
+{
+
 }
 
 node namenode {
@@ -34,6 +45,7 @@ node namenode {
   }
 }
 
+
 node worker01 { 
  
  at3_condorworker { atlas_worker01_condorworker:
@@ -45,5 +57,7 @@ node worker01 {
     fsDefaultName 	=> $fsDefaultName, 
     mountPoint	 	=> $mountPoint,
     nameNodes 		=> $nameNodes, 
+    nfsShare		=> "condorhead:$nfsShareRoot",
+    nfsMount		=> $nfsShareRoot,
   }
 }
