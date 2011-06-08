@@ -1,0 +1,11 @@
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/80/at3/at3_nfs/trunk/templates
+END
+etc-exports.tpl
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/80/at3/at3_nfs/trunk/templates/etc-exports.tpl
+END
