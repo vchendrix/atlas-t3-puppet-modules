@@ -4,4 +4,6 @@
 ::1		localhost6.localdomain6 localhost6
 192.168.124.128	puppet
 192.168.124.130	namenode
-192.168.124.131 worker01	
+192.168.124.131	worker01
+192.168.124.135 condorhead
+192.168.124.137 nfs

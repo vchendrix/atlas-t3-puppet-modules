@@ -1,5 +1,6 @@
 $nfsShareRoot = "/export/share"
 $nfsClientList = ["192.168.124.0/255.255.240.0"]
+$nfsServerAddress = 'nfs'
 
 $clusterName 	= 'altas'
 $dataNodes 	= ['worker01']
@@ -12,11 +13,11 @@ $filesystemdomain = 'condorfiles'
 $condorpassword	= 'abcdefg'
 $condorheadaddr = 'condorhead'
 $condor_allow_negotiator_extra = ''
-
+$installDir = '/opt'
 
 node condorhead {
   
-  at3_condorhead { atlas_condorhead:
+  at3::condorhead { atlas_condorhead:
     clusterName 	=> $clusterName, 
     condorpassword 	=> $condorpassword,
     condor_allow_negotiator_extra => $condor_allow_negotiator_extra,
@@ -25,19 +26,26 @@ node condorhead {
     filesystemdomain 	=> $filesystemdomain,
     mountPoint	 	=> $mountPoint,
     nameNodes 		=> $nameNodes, 
-    nfsShare		=> "condorhead:$nfsShareRoot",
+    nfsShare		=> "$nfsServerAddress:$nfsShareRoot",
     nfsMount		=> $nfsShareRoot,
+  }
+}
+
+node nfs {
+
+  at3::nfssrv { atlas_nfs:
+    share_root	=> $nfsShareRoot,
+    clientlist	=> $nfsClientList,
   }
 }
 
 node panda-pilot-submitter
 {
-
 }
 
 node namenode {
 
-  at3_namenode { atlas_namenode:
+  at3::namenode { atlas_namenode:
     dataNodes	  => $dataNodes,
     fsDefaultName => $fsDefaultName,
     nameNodes	  => $nameNodes,
@@ -48,7 +56,7 @@ node namenode {
 
 node worker01 { 
  
- at3_condorworker { atlas_worker01_condorworker:
+ at3::condorworker { atlas_worker01_condorworker:
     clusterName   	=> $clusterName, 
     condorpassword 	=> $condorpassword,
     condorheadaddr	=> $condorheadaddr,
@@ -57,7 +65,7 @@ node worker01 {
     fsDefaultName 	=> $fsDefaultName, 
     mountPoint	 	=> $mountPoint,
     nameNodes 		=> $nameNodes, 
-    nfsShare		=> "condorhead:$nfsShareRoot",
+    nfsShare		=> "$nfsServerAddress:$nfsShareRoot",
     nfsMount		=> $nfsShareRoot,
   }
 }

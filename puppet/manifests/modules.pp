@@ -1,6 +1,4 @@
-import "at3_condorhead"
-import "at3_condorworker"
-import "at3_namenode"
-import "hadoop"
+import "at3"
 import "condor"
+import "hadoop"
 import "nfs"
