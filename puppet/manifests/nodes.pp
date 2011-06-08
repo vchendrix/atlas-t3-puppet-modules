@@ -39,8 +39,13 @@ node nfs {
   }
 }
 
-node panda-pilot-submitter
-{
+node panda {
+  
+  class {'panda':
+    nfsShare		=> "$nfsServerAddress:$nfsShareRoot",
+    nfsMount		=> $nfsShareRoot,
+  }
+
 }
 
 node namenode {

@@ -9,7 +9,7 @@ class panda ($installDir='/opt/',$nfsMount,$nfsShare) {
   }
 
   # panda logs dir
-  file { "~/panda_setup.sh":
+  file { "/root/panda_setup.sh":
     ensure  => present,
     owner   => "root",
     group   => "root",
@@ -28,7 +28,7 @@ class panda ($installDir='/opt/',$nfsMount,$nfsShare) {
     require => Mount[$nfsMount],
   }
  
-  package { ['cron','subversion']:
+  package { ['python','subversion']:
     ensure => installed,
   }
   
@@ -62,4 +62,24 @@ class panda ($installDir='/opt/',$nfsMount,$nfsShare) {
     tries     => 3,
     require	=> Package['subversion'],
   }
+
+  cron { pilot_submission:
+    command => "~/pilots/autopilot/pilotCron.sh --queue=LBL_MAGELLAN_TEST --pandasite=LBL_MAGELLAN_TEST --pilot=atlasTier3New > ~/.pilotCron.txt",
+    user => root,
+    hour => [0,6,12,18],
+    minute => 5 
+  }
+  cron { pilot_monitor:
+    command => "~/pilots/autopilot/pilotCron.sh --monitor --nocheck > ~/.pilotMon.txt",
+    user => root,
+    hour => [0,6,12,18],
+    minute => 5 
+  }
+  cron { pilot_maintenance:
+    command => "~/pilots/panda_manage.sh > ~/.pilotManage.txt",
+    user => root,
+    hour => [0,6,12,18],
+    minute => 5 
+  }
+  
 }
