@@ -1,0 +1,12 @@
+This project houses all of the puppet modules that I have created for ATLAS Tier 3 deploment. It contains the following modules. 
+
+	at3	- Atlas Tier 3 node configurations base on the modules in this project
+	condor  - Condor classes for creating head and worker nodes. Installs but condor does not accept queue submission
+	hadoop  - Hadoop classes and definitions for installing hadoop namenode, datanode, and fuse [TESTED]
+	nfs     - Class for creating and nfs client and server. [TESTED]
+	panda   - Panda set up.  The puppet configuration has been tested but it has not been used
+
+Conventions: 
++ classes are prefixed with cls_
++ definitions have no prefixes
+
