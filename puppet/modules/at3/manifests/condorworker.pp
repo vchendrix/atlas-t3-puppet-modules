@@ -20,6 +20,7 @@ define at3::condorworker($clusterName,$condorheadaddr,$condorpassword,$filesyste
    $mountPoint,$dataNodes,$nameNodes,$fsDefaultName,$nfsShare,$nfsMount) {
   
   include condor::cls_condor_base 
+  include xrootd::xrootd_redirector
   class { 'condor::cls_condor_worker':
     condorpassword 	=> $condorpassword,
     condorheadaddr	=> $condorheadaddr,

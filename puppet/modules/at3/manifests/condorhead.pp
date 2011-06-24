@@ -20,6 +20,7 @@ define at3::condorhead($condorpassword,$condor_allow_negotiator_extra,$clusterNa
    $mountPoint,$dataNodes,$nameNodes,$fsDefaultName,$nfsShare,$nfsMount) {
   
   include condor::cls_condor_base 
+  include xrootd::xrootd_data
 
   class { 'condor::cls_condor_head':
     mountPoint	 	=> $nfsMount,

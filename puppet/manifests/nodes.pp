@@ -74,3 +74,13 @@ node worker01 {
     nfsMount		=> $nfsShareRoot,
   }
 }
+
+node redirector {
+
+   include xrootd::cls_redirector
+}
+
+node xrdata {
+   include xrootd::cls_data
+}
+

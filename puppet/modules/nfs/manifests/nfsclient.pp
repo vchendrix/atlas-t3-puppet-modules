@@ -1,3 +1,18 @@
+# Definition: nfs::nfsclient 
+#
+#    create an nfs mount point for given parameters
+#
+# Parameters:
+#   $source - The nfs directory to mount should be of the 
+#             for nfshost:/path
+#   $dest   - the mount point
+#
+# Actions:
+#   - creates the $dest directories
+#   - mounts the directory to $source
+#
+# Requires:
+#   
 define nfs::nfsclient($source,$dest) {
 
   include nfs::cls_nfs_client
